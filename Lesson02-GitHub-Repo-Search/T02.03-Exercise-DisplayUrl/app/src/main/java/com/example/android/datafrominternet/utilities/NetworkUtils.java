@@ -15,9 +15,14 @@
  */
 package com.example.android.datafrominternet.utilities;
 
+import android.net.Uri;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -45,8 +50,19 @@ public class NetworkUtils {
      * @return The URL to use to query the weather server.
      */
     public static URL buildUrl(String githubSearchQuery) {
-        // TODO (1) Fill in this method to build the proper Github query URL
-        return null;
+        // OK (1) Fill in this method to build the proper Github query URL
+        Uri uri = Uri.parse(GITHUB_BASE_URL).buildUpon()
+                .appendQueryParameter(PARAM_QUERY, githubSearchQuery)
+                .appendQueryParameter(PARAM_SORT, sortBy)
+                .build();
+        URL urlGitHub = null;
+        try {
+            urlGitHub = new URL(uri.toString());
+        } catch (MalformedURLException exc){
+            Log.e(NetworkUtils.class.getName(), exc.getMessage());
+        } finally {
+            return urlGitHub;
+        }
     }
 
     /**

@@ -16,6 +16,7 @@
 package com.example.android.datafrominternet.utilities;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,11 +82,13 @@ public class NetworkUtils {
             boolean hasInput = scanner.hasNext();
             if (hasInput) {
                 return scanner.next();
-            } else {
-                return null;
             }
+        } catch (Exception exc) {
+            Log.e(NetworkUtils.class.getName(), "getResponseFromHttpUrl: "+ exc.getMessage());
+            exc.printStackTrace();
         } finally {
             urlConnection.disconnect();
+            return  null;
         }
     }
 }

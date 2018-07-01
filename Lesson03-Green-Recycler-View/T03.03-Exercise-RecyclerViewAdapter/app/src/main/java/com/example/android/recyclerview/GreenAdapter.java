@@ -15,7 +15,10 @@
  */
 package com.example.android.recyclerview;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,21 +35,46 @@ import android.widget.TextView;
  * If you don't like our puns, we named this Adapter GreenAdapter because its
  * contents are green.
  */
-// TODO (4) From GreenAdapter, extend RecyclerView.Adapter<NumberViewHolder>
-public class GreenAdapter {
+// ok (4) From GreenAdapter, extend RecyclerView.Adapter<NumberViewHolder>
+public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHolder>{
 
-    // TODO (1) Add a private int variable called mNumberItems
+    private final String TAG = GreenAdapter.class.getName();
+    // ok (1) Add a private int variable called mNumberItems
+    private int mNumberItems;
 
-    // TODO (2) Create a constructor for GreenAdapter that accepts an int as a parameter for numberOfItems
-    // TODO (3) Store the numberOfItems parameter in mNumberItems
+    // ok (2) Create a constructor for GreenAdapter that accepts an int as a parameter for numberOfItems
+    GreenAdapter(int numberOfItems){
+        // ok (3) Store the numberOfItems parameter in mNumberItems
+        this.mNumberItems = numberOfItems;
+    }
 
-    // TODO (5) Override the onCreateViewHolder method
-    // TODO (6) Create and return a new NumberViewHolder within this method
+    // ok (5) Override the onCreateViewHolder method
+    @Override
+    public NumberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // ok (6) Create and return a new NumberViewHolder within this method
+        Context context = parent.getContext();
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        boolean shouldAttachToParentImmeadiately = false;
 
-    // TODO (7) Override onBindViewHolder
-    // TODO (8) Within onBindViewHolder, call holder.bind and pass in the position
+        View view = layoutInflater.inflate(R.layout.number_list_item, parent, shouldAttachToParentImmeadiately);
+        NumberViewHolder numberViewHolder = new NumberViewHolder(view);
+        return numberViewHolder;
+    }
 
-    // TODO (9) Override getItemCount and return the number of items to display
+    // ok (7) Override onBindViewHolder
+    // ok (8) Within onBindViewHolder, call holder.bind and pass in the position
+    @Override
+    public void onBindViewHolder(NumberViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder: #"+position);
+        holder.bind(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        // ok (9) Override getItemCount and return the number of items to display
+        return mNumberItems;
+    }
+
 
     /**
      * Cache of the children views for a list item.

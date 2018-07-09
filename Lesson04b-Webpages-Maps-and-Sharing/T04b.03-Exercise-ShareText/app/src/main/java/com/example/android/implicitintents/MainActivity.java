@@ -15,14 +15,21 @@
  */
 package com.example.android.implicitintents;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickOpenAddressButton(View v) {
-        String addressString = "1600 Amphitheatre Parkway, CA";
+        String addressString = "Rua corumbá 295, manaus AM";
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("geo")
-                .path("0,0")
-                .query(addressString);
+                .appendEncodedPath("0,0")
+                .appendQueryParameter("q", addressString);
         Uri addressUri = builder.build();
 
         showMap(addressUri);
@@ -66,10 +73,11 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void onClickShareTextButton(View v) {
-        // TODO (5) Specify a String you'd like to share
+        // ok (5) Specify a String you'd like to share
+        String sharedText = "T04b.03-Exercise-ShareText";
 
-        // TODO (6) Replace the Toast with shareText, passing in the String from step 5
-        Toast.makeText(this, "TODO: Share text when this is clicked", Toast.LENGTH_LONG).show();
+        // ok (6) Replace the Toast with shareText, passing in the String from step 5
+        shareText(sharedText);
     }
 
     /**
@@ -82,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
      * @param v Button that was clicked.
      */
     public void createYourOwn(View v) {
+        String phoneNumber = "92 98805-4150";
         Toast.makeText(this,
-                "TODO: Create Your Own Implicit Intent",
+                "Dial: " + phoneNumber,
                 Toast.LENGTH_SHORT)
                 .show();
+        dialPhoneCall(phoneNumber);
     }
 
     /**
@@ -143,12 +153,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // TODO (1) Create a void method called shareText that accepts a String as a parameter
+    // ok (1) Create a void method called shareText that accepts a String as a parameter
     // Do steps 2 - 4 within the shareText method
+    public void shareText(String textToShare) {
+        // ok (2) Create a String variable called mimeType and set it to "text/plain"
+        String mimeType = "text/plain";
+        // ok (3) Create a title for the chooser window that will pop up
+        String title = "Sharing test";
+        // ok (4) Use ShareCompat.IntentBuilder to build the Intent and start the chooser
+        Intent intent = ShareCompat.IntentBuilder.from(this)
+                .setChooserTitle(title)
+                .setType(mimeType)
+                .setText(textToShare).getIntent();
 
-        // TODO (2) Create a String variable called mimeType and set it to "text/plain"
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
 
-        // TODO (3) Create a title for the chooser window that will pop up
+    public void dialPhoneCall(String number) {
+        Uri.Builder uriBuilder = new Uri.Builder();
+        uriBuilder.scheme("tel").appendPath(number);
 
-        // TODO (4) Use ShareCompat.IntentBuilder to build the Intent and start the chooser
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(uriBuilder.build());
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                // ok: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(new String[]{Manifest.permission.CALL_PHONE},MY_PERMISSIONS_REQUEST_CALL_PHONE );
+                }
+                return;
+            }
+            startActivity(intent);
+        }
+    }
 }
